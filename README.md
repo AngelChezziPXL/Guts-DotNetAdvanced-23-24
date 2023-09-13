@@ -1,7 +1,3 @@
-<style>
-red { color: red }
-</style>
-
 # Guts-DotNetAdvanced-23-24
 In this repository you can find (visual studio) start solutions for the exercises of the **.NET Advanced** course of **PXL-Digital**.
 
@@ -59,8 +55,11 @@ Double click the solution that contains the exercises you want to work on. Alter
 Exercises will be added and changes will be made during the course. These changes will happen in the original repository made by the lectors (your online repository is a copy of this repository). We will call the original repository of the lectors the **upstream** repository.
 Your personal online repository will be called the **origin** from now on.
 
-You need a way to pull changes in the *upstream* repository into the *origin* repository.
-Follow the instructions below to make this possible. <red>**It is important that you do this before pushing your first commit to the origin!!**</red>
+You need a way to pull changes in the *upstream* repository into the *origin* repository. Follow the instructions below to make this possible. 
+
+[!IMPORTANT] 
+**It is important that you do this before pushing your first commit to the origin!!**
+
 * In Visual Studio, navigate in the menu to *Git -> Manage Remotes...*
 * The *origin* (your personal online repo) is already configured
 * Add a new remote named **upstream** that points to the original online repository made by the lectors.
