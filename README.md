@@ -13,7 +13,7 @@ The exercise projects are (mostly) empty and waiting for you to complete them.
 The matching test projects contain **automated tests** that can be run to check if your solution is correct.
 
 ## Parts
-The assignments for each chapter can be found in de README.md in the folder of the chapter or by clicking on one of the links below:
+The assignments for each part can be found in de README.md in the folder of the part or by clicking on one of the links below:
 * [Part 1 - C# Language features](1_LanguageFeatures/README.md)
 * [Part 2 - ASP.NET Core MVC](2_MVC/README.md)
 * [Part 3 - ASP.NET Rest API & Razor pages](3_API-RazorPages/README.md)
@@ -58,7 +58,7 @@ Your personal online repository will be called the **origin** from now on.
 You need a way to pull changes in the *upstream* repository into the *origin* repository. Follow the instructions below to make this possible. 
 
 > [!IMPORTANT] 
-> **It is important that you do this before pushing your first commit to the origin!!**
+> **It is important that you execute the instructions before pushing your first own commit to the origin!!**
 
 * In Visual Studio, navigate in the menu to *Git -> Manage Remotes...*
 * The *origin* (your personal online repo) is already configured
@@ -66,7 +66,11 @@ You need a way to pull changes in the *upstream* repository into the *origin* re
      * Click on the *Add* button
           * Name: *upstream*
           * Fetch: *https://github.com/pxlit-projects/Guts-DotNetAdvanced-23-24*
-          * Push: *https://github.com/pxlit-projects/Guts-DotNetAdvanced-23-24*  
+          * Push: *https://github.com/pxlit-projects/Guts-DotNetAdvanced-23-24*
+     * Click on *Save*
+     * Open a command prompt and navigate to the folder that contains your local copy of the *origin* repository. Tip: in Visual Studio you can open a command prompt in the correct folder via the menu: *Git -> Open in Command Prompt*
+     * Execute the command **git pull upstream main --allow-unrelated-histories**. This command downloads the commits made by the lectors and tries to merge them with your last local commit.
+     * Execute the command **git push orgin main**. This commands will push (upload) the local commits to your online repository (*origin*).  
 
 ### Register on [guts-web.pxl.be](https://guts-web.pxl.be)
 
@@ -82,8 +86,6 @@ After registration you will have the credentials you need to succesfully run aut
 3. Write the code you need to write
 
 #### Run the automated tests
-
-Let's assume you are working on exercise 5 of chapter 5.
 
 1. Open the *Test Explorer* window (Menu: Test &rightarrow; Test Explorer)
 2. In the top right corner, click on the *group by* button and make sure the automated tests are grouped by project (see the picture below). If you don't see any tests appearing, you probably should (re)build your solution.
