@@ -57,8 +57,8 @@ Your personal online repository will be called the **origin** from now on.
 
 You need a way to pull changes in the *upstream* repository into the *origin* repository. Follow the instructions below to make this possible. 
 
-[!IMPORTANT] 
-**It is important that you do this before pushing your first commit to the origin!!**
+> [!IMPORTANT] 
+> **It is important that you do this before pushing your first commit to the origin!!**
 
 * In Visual Studio, navigate in the menu to *Git -> Manage Remotes...*
 * The *origin* (your personal online repo) is already configured
