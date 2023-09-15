@@ -52,7 +52,7 @@ public class CardDeckTests
             "The class should have a private static field of type Random.");
 
         Assert.That(randomField!.IsInitOnly, Is.True,
-            "Make sure the field that holds the collection of cards can only be set in the constructor");
+            "Make sure the field that holds the Random instance can only be set in the constructor");
 
         Random? random = randomField.GetValue(new CardDeck()) as Random;
 
