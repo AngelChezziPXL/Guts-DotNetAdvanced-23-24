@@ -11,7 +11,7 @@ namespace QuizApplication.Web.Controllers
     {
         private readonly ILogger<QuestionController> _logger;
 
-        public QuestionController(ILogger<QuestionController> logger, IQuizService o)
+        public QuestionController(ILogger<QuestionController> logger, IQuizService quizService)
         {
             _logger = logger;
         }

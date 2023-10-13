@@ -22,8 +22,8 @@ namespace QuizApplication.Tests.Domain
             Assert.That(properties.Count, Is.EqualTo(4), "Class Question should have 4 properties (with getter and setter)");
             Assert.That(properties.Any(p => p.Name == "Id"), Is.True);
             Assert.That(properties.Any(p => p.Name == "QuestionString"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "Id"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "Id"), Is.True);
+            Assert.That(properties.Any(p => p.Name == "CategoryId"), Is.True);
+            Assert.That(properties.Any(p => p.Name == "Answers"), Is.True);
 
             ConstructorInfo[] constructors = questionType.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
             ConstructorInfo constructor = constructors.First();
