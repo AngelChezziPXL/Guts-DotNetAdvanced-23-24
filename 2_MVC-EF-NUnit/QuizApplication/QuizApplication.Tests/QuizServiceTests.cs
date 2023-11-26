@@ -188,10 +188,20 @@ namespace QuizApplication.Tests.AppLogic
             }
             catch (Exception)
             {
-                _service = Activator.CreateInstance(typeof(QuizService),
-                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                    new object[] { },
-                    null) as QuizService;
+                try
+                {
+                    _service = Activator.CreateInstance(typeof(QuizService),
+                        BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
+                        new object[] { categoryRepository, questionRepository },
+                        null) as QuizService;
+                }
+                catch (Exception)
+                {
+                    _service = Activator.CreateInstance(typeof(QuizService),
+                        BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
+                        new object[] { },
+                        null) as QuizService;
+                }
             }
             Assert.That(_service, Is.Not.Null, "Failed to instantiate a QuizService. There should be a constructor accepting a IQuestionRepository and a ICategoryRepository");
         }
