@@ -10,7 +10,7 @@ using System.Reflection;
 namespace ContactManager.Tests.Web
 {
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
-    @"ContactManager\Index.cshtml.cs")]
+    @"ContactManager\Pages\Index.cshtml.cs")]
 
     public class IndexPageModelTests
     {

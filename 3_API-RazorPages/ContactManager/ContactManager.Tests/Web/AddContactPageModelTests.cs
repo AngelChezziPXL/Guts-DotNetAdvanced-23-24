@@ -10,7 +10,7 @@ using Guts.Client.Core;
 namespace ContactManager.Tests.Web
 {
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
-    @"ContactManager\Pages\Contacts\AddContacts.cshtml.cs")]
+    @"ContactManager\Pages\Contacts\AddContact.cshtml.cs")]
 
     public class AddContactPageModelTests
     {

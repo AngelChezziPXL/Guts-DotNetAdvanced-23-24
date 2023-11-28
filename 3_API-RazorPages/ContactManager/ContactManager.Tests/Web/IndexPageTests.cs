@@ -10,7 +10,7 @@ using System.Net;
 namespace ContactManager.Tests.Web
 {
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
-    @"ContactManager\Pages\Index.cshtml.cs")]
+    @"ContactManager\Pages\Index.cshtml")]
 
     public class IndexPageTests
     {
@@ -23,22 +23,9 @@ namespace ContactManager.Tests.Web
             _factory = new WebApplicationFactory<Program>();
             _client = _factory.CreateClient();
         }
-
-        [MonitoredTest("Html Integration Tests - Razor Page - Index - Should inherit from PageModel")]
-        public void _01_IndexModel_InheritsPageModel()
-        {
-            // Arrange
-            var context = new Mock<IContactRepository>();
-
-            // Act
-            var addCompanyModel = new IndexModel(context.Object);
-
-            // Assert
-            Assert.That(addCompanyModel, Is.InstanceOf<PageModel>(),"AddCompanyModel should inherit from PageModel.");
-        }
-
+        
         [MonitoredTest("Html Integration Tests - Razor Page - Index - Should return a success Status Code")]
-        public async Task _02_IndexPage_ReturnsSuccessStatusCode()
+        public async Task _01_IndexPage_ReturnsSuccessStatusCode()
         {
             // Act
                var response = await _client.GetAsync("/Index"); 
@@ -48,7 +35,7 @@ namespace ContactManager.Tests.Web
         }
 
         [MonitoredTest("Html Integration Tests - Razor Page - Index - Should return html containing a table with 5 columns and the correct column headers")]
-        public async Task _03_IndexPage_ShouldContainExpectedHtmlContent()
+        public async Task _02_IndexPage_ShouldContainExpectedHtmlContent()
         {
             // Act
             var response = await _client.GetAsync("/Index"); 
