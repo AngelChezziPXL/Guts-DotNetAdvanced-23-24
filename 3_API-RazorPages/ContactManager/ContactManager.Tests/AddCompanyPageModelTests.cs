@@ -40,6 +40,7 @@ namespace ContactManager.Tests.Web
             // Arrange
             var companyProperty = typeof(AddCompanyModel).GetProperty("Company");
 
+            Assert.That(companyProperty, Is.Not.Null, "The AddCompanyModel class musth have a Company property");
             // Act
             var hasBindPropertyAttribute = companyProperty.GetCustomAttributes(typeof(BindPropertyAttribute), false).Any();
 

@@ -11,7 +11,6 @@ namespace ContactManager.Tests.Web
 {
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
     @"ContactManager\Pages\Index.cshtml.cs")]
-
     public class IndexPageModelTests
     {
         private Mock<IContactRepository> _mockRepository = null!;
@@ -39,8 +38,10 @@ namespace ContactManager.Tests.Web
             // Arrange
             var contactsProperty = typeof(IndexModel).GetProperty("Contacts");
 
+            Assert.That(contactsProperty, Is.Not.Null, "The Index Model class must have a Contacts property");
             // Act
             var hasBindPropertyAttribute = contactsProperty.GetCustomAttributes(typeof(BindPropertyAttribute), false).Any();
+            
 
             // Assert
             Assert.That(hasBindPropertyAttribute, Is.True, "The Contacts property should have the [BindProperty] attribute.");
