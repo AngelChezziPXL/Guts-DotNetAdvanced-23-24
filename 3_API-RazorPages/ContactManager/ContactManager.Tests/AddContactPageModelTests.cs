@@ -23,25 +23,20 @@ namespace ContactManager.Tests.Web
             _mockCompaniesRepository = new Mock<ICompanyRepository>();
         }       
 
-        [MonitoredTest("AddContactModel Tests - Contact property has a BindProperty attribute")]
-        public void _01_ContactAndCompaniesProperties_HaveBindPropertyAttribute()
+        [MonitoredTest("AddContactModel Tests - Contact and Companies properties should have a BindProperty attribute")]
+        public void _01_ContactAndCompaniesProperties_ShouldHaveBindPropertyAttribute()
         {
             // Arrange
             var contactProperty = typeof(AddContactModel).GetProperty("Contact");
             var companiesProperty = typeof(AddContactModel).GetProperty("Companies");
 
-            /*     Assert.That(contactProperty, Is.Not.Null, "The AddContactModel class must have a Contact property");
-                 Assert.That(companiesProperty, Is.Not.Null, "The AddContactModel class must have a Companies property");
+            // Act
+            var contactHasBindPropertyAttribute = contactProperty.GetCustomAttributes(typeof(BindPropertyAttribute), false).Any();
+            var companiesHasBindPropertyAttribute = companiesProperty.GetCustomAttributes(typeof(BindPropertyAttribute), false).Any();
 
-                 // Act
-                 var contactHasBindPropertyAttribute = contactProperty.GetCustomAttributes(typeof(BindPropertyAttribute), false).Any();
-                 var companiesHasBindPropertyAttribute = companiesProperty.GetCustomAttributes(typeof(BindPropertyAttribute), false).Any();
-
-                 // Assert
-                 Assert.That(contactHasBindPropertyAttribute, Is.True, "The Contact property should have the [BindProperty] attribute.");
-                 Assert.That(companiesHasBindPropertyAttribute, Is.True, "The Companies property should have the [BindProperty] attribute.");
-            */
-            Assert.That(true);
+            // Assert
+            Assert.That(contactHasBindPropertyAttribute, Is.True, "The Contact property should have the [BindProperty] attribute.");
+            Assert.That(companiesHasBindPropertyAttribute, Is.True, "The Companies property should have the [BindProperty] attribute.");
         }
     }
 }

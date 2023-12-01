@@ -11,7 +11,7 @@ namespace ContactManager.Tests.Infrastructure
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
     @"ContactManager.Infrastructure\ContactManagerDbContext.cs")]
 
-    internal class ContactManagerContextTests:DatabaseTests
+    internal class ContactManagerDbContextTests : DatabaseTests
     {
         private string _contactManagerContextClassContent = null!;
 
@@ -21,7 +21,7 @@ namespace ContactManager.Tests.Infrastructure
             _contactManagerContextClassContent = Solution.Current.GetFileContent(@"ContactManager.Infrastructure\ContactManagerDbContext.cs");
         }
         
-        [MonitoredTest("QuizContext - should have 2 DbSets")]
+        [MonitoredTest("ContactManagerDbContext - should have 2 DbSets")]
         public void _01_ShouldHave2DbSets()
         {
             var properties = GetDbSetProperties();
