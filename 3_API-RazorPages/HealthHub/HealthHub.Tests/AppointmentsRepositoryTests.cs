@@ -95,7 +95,7 @@ namespace HealthHub.Tests
             }
         }
 
-        [MonitoredTest("AppointmentsRepository - GetAppointmentsForDoctor  - should return all Appointments for Doctor")]
+        [MonitoredTest("AppointmentsRepository - GetAppointmentsForPatient  - should return all Appointments for Patient")]
         public void _06_GetForPatient_ShouldReturnAllAppointmentsForPatient()
         {
             using (var context = CreateDbContext(true))

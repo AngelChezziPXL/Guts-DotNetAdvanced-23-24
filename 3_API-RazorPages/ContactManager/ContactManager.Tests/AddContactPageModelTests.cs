@@ -23,8 +23,8 @@ namespace ContactManager.Tests.Web
             _mockCompaniesRepository = new Mock<ICompanyRepository>();
         }       
 
-        [MonitoredTest("AddContactModel Tests - Contact property has a BindProperty attribute")]
-        public void _01_ContactAndCompaniesProperties_HaveBindPropertyAttribute()
+        [MonitoredTest("AddContactModel Tests - Contact and Companies properties should have a BindProperty attribute")]
+        public void _01_ContactAndCompaniesProperties_ShouldHaveBindPropertyAttribute()
         {
             // Arrange
             var contactProperty = typeof(AddContactModel).GetProperty("Contact");
@@ -39,7 +39,7 @@ namespace ContactManager.Tests.Web
 
             // Assert
             Assert.That(contactHasBindPropertyAttribute, Is.True, "The Contact property should have the [BindProperty] attribute.");
-            Assert.That(companiesHasBindPropertyAttribute, Is.True, "The Companies property should have the [BindProperty] attribute.");
-         }
+            Assert.That(companiesHasBindPropertyAttribute, Is.True, "The Companies property should have the [BindProperty] attribute.");         
+        }
     }
 }

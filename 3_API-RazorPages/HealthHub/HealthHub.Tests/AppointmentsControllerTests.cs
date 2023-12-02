@@ -9,8 +9,9 @@ using Moq;
 
 namespace HealthHub.Tests
 {
+    //3_API-RazorPages\HealthHub\HealthHub\AppointmentsController.cs
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "HealthHub",
-@"HealthHub\AppointmentsController.cs")]
+@"HealthHub\Controllers\api\AppointmentsController.cs")]
 
     public class AppointmentsControllerTests
     {

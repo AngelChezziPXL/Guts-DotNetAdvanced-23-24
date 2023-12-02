@@ -10,7 +10,7 @@ using System.Reflection;
 namespace HealthHub.Tests
 {
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "HealthHub",
-@"HealthHub\DoctorsController.cs")]
+@"HealthHub\Controllers\api\DoctorsController.cs")]
 
     public class DoctorsControllerTests
     {

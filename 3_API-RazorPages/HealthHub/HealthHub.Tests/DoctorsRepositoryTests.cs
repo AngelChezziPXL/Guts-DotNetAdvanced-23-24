@@ -57,7 +57,7 @@ namespace HealthHub.Tests
             }
         }
 
-        [MonitoredTest("DoctorsRepository - GetById  - should return a Doctor")]
+        [MonitoredTest("DoctorsRepository - GetBySpeciality - should return Doctors of speciality")]
         public void _04_GetBySpecialty_ShouldReturnDoctorsOfSpecialty()
         {
             using (var context = CreateDbContext(true))
