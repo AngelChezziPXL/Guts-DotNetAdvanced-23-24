@@ -21,7 +21,7 @@ namespace ContactManager.Tests.Infrastructure
             _contactManagerContextClassContent = Solution.Current.GetFileContent(@"ContactManager.Infrastructure\ContactManagerDbContext.cs");
         }
         
-        [MonitoredTest("QuizContext - should have 2 DbSets")]
+        [MonitoredTest("ContactManagerContext - should have 2 DbSets")]
         public void _01_ShouldHave2DbSets()
         {
             var properties = GetDbSetProperties();

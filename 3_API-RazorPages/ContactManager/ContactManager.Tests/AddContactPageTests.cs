@@ -24,7 +24,7 @@ namespace ContactManager.Tests.Web
         public async Task _01_AddContactPage_ReturnsSuccessStatusCode()
         {
             // Act
-            var response = await _client.GetAsync("Companies/AddContact");
+            var response = await _client.GetAsync("Contacts/AddContact");
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK),"The AddContact page should return a status code 200.");

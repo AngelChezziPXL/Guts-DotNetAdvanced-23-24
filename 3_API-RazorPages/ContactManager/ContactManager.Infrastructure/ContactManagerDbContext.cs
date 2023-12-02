@@ -16,7 +16,7 @@ namespace ContactManager.Infrastructure
         {
             return new List<Company>()
             {
-                new Company()
+                new Company
                 {
                     Id = 1,
                     Name = "TechCo",
