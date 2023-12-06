@@ -7,7 +7,7 @@ using System;
 
 namespace HealthHub.Tests
 {
-    [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
+    [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "HealthHub",
 @"HealthHub.Infrastructure\AppointmentsRepository.cs")]
 
     internal class AppointmentsRepositoryTests : DataBaseTests
