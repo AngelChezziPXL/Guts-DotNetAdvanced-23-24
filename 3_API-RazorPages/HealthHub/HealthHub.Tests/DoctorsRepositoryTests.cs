@@ -71,46 +71,92 @@ namespace HealthHub.Tests
         }
 
         [MonitoredTest("DoctorsRepository - Add  - Should add a Doctor")]
-        public void _05_Add_ShouldAddaDoctors()
+        public void _05_Add_ShouldAddaDoctor()
         {
-            using (var context = CreateDbContext(true))
+            int doctorId = Random.Shared.Next(100, int.MaxValue);
+            var newDoctor = new Doctor()
             {
-                IDoctorsRepository repository = new DoctorsRepository(context);
+                Id = doctorId,
+                FirstName = Guid.NewGuid().ToString(),
+                LastName = Guid.NewGuid().ToString(),
+                Email = Guid.NewGuid().ToString(),
+                Phone = Guid.NewGuid().ToString(),
+                SpecialtyId = 1
+            };
+            using (var actContext = CreateDbContext(true))
+            {
+                var repository = new DoctorsRepository(actContext);
+                repository.Add(newDoctor);
+            }
 
-                var guid= Guid.NewGuid().ToString();
-                var doctor = new Doctor() { Id=9999, FirstName = guid, LastName = guid, Email = guid, Phone = guid, SpecialtyId = 1 };
-                repository.Add(doctor);
-                Assert.That(context.Doctors, Does.Contain(doctor));
+            using (var assertContext = CreateDbContext(true))
+            {
+                Doctor? addedDoctor = assertContext.Doctors.FirstOrDefault(d => d.Id == doctorId);
+                Assert.That(addedDoctor, Is.Not.Null, "The doctor is not added correctly in the database");
             }
         }
 
         [MonitoredTest("DoctorsRepository - Update - Should update a Doctor")]
         public void _06_Update_ShouldUpdateaDoctor()
         {
-            using (var context = CreateDbContext(true))
+            //Arrange
+            int doctorId = Random.Shared.Next(100, int.MaxValue);
+            int originalNumberOfDoctors = 0;
+            var doctor = new Doctor()
             {
-                IDoctorsRepository repository = new DoctorsRepository(context);
+                Id = doctorId,
+                FirstName = Guid.NewGuid().ToString(),
+                LastName = Guid.NewGuid().ToString(),
+                Email = Guid.NewGuid().ToString(),
+                Phone = Guid.NewGuid().ToString(),
+                SpecialtyId = 1
+            };
+            using (var arrangeContext = CreateDbContext(true))
+            {
+                arrangeContext.Doctors.Add(doctor);
+                arrangeContext.SaveChanges();
+                originalNumberOfDoctors = arrangeContext.Doctors.Count();
+            }
 
-                string guid = Guid.NewGuid().ToString();
-                var doctor = new Doctor() { Id=1, FirstName = guid, LastName = guid, Email = guid, Phone = guid, SpecialtyId = 1 };
+            //Act
+            string updatedFirstName = Guid.NewGuid().ToString();
+            doctor.FirstName = updatedFirstName;
+
+            using (var actContext = CreateDbContext(true))
+            {
+                IDoctorsRepository repository = new DoctorsRepository(actContext);
                 repository.Update(doctor);
-                Assert.That(context.Doctors, Does.Contain(doctor));
+            }
+
+            //Assert
+            using (var assertContext = CreateDbContext(false))
+            {
+                Doctor? updatedDoctor = assertContext.Set<Doctor>().FirstOrDefault(d => d.Id == doctorId);
+                Assert.IsNotNull(updatedDoctor);
+                int numberOfDoctors = assertContext.Doctors.Count();
+                Assert.That(numberOfDoctors, Is.EqualTo(originalNumberOfDoctors),
+                    "A doctor was added or deleted instead of updated");
+                Assert.That(updatedDoctor!.FirstName, Is.EqualTo(updatedFirstName), "The doctor is not updated correctly");
             }
         }
 
         [MonitoredTest("DoctorsRepository - Delete - Should delete a Doctor")]
         public void _07_Delete_ShouldDeleteaDoctor()
         {
-            using (var context = CreateDbContext(true))
+            Doctor doctorToDelete = null!;
+            using (var actContext = CreateDbContext(true))
             {
-                IDoctorsRepository repository = new DoctorsRepository(context);
+                IDoctorsRepository repository = new DoctorsRepository(actContext);
 
-                var doctorToDelete = context.Doctors.Find(1);
-                repository.Delete(1);
-                Assert.That(context.Doctors, Does.Not.Contain(doctorToDelete));
+                doctorToDelete = actContext.Doctors.First();
+                repository.Delete(doctorToDelete.Id);
+            }
+
+            using (var assertContext = CreateDbContext(true))
+            {
+                Doctor? deletedDoctor = assertContext.Doctors.FirstOrDefault(d => d.Id == doctorToDelete.Id);
+                Assert.That(deletedDoctor, Is.Null, "The doctor is not deleted in the database.");
             }
         }
-
-
     }
 }

@@ -143,14 +143,26 @@ namespace HealthHub.Tests
         [MonitoredTest("AppointmentsRepository - Add  - Should add an Appointment")]
         public void _08_Add_ShouldAddAnAppointment()
         {
-            using (var context = CreateDbContext(true))
+            int appointmentId = Random.Shared.Next(100, int.MaxValue);
+            var newAppointment = new Appointment()
             {
-                var repository = new AppointmentsRepository(context);
+                Id = appointmentId,
+                AppointmentDate = DateTime.Today,
+                DoctorId = 6,
+                PatientNationalNumber = Guid.NewGuid().ToString(),
+                Reason = Guid.NewGuid().ToString()
+            };
 
-                var guid = Guid.NewGuid().ToString();
-                var appointment = new Appointment() { Id = 3024, AppointmentDate = DateTime.Today, DoctorId = 6, PatientNationalNumber = guid, Reason = guid };
-                repository.Add(appointment);
-                Assert.That(context.Appointments, Does.Contain(appointment), "The appointment list should contain the new Appointment.");
+            using (var actContext = CreateDbContext(true))
+            {
+                var repository = new AppointmentsRepository(actContext);
+                repository.Add(newAppointment);
+            }
+
+            using (var assertContext = CreateDbContext(true))
+            {
+                Appointment? addedAppointment = assertContext.Appointments.FirstOrDefault(a => a.Id == appointmentId);
+                Assert.That(addedAppointment, Is.Not.Null, "The appointment is not added correctly in the database");
             }
         }
 
@@ -158,29 +170,63 @@ namespace HealthHub.Tests
         [MonitoredTest("AppointmentsRepository - Update - Should update an Appointment")]
         public void _09_Update_ShouldUpdateaDoctor()
         {
-            using (var context = CreateDbContext(true))
+            //Arrange
+            Appointment appointment = null!;
+            int appointmentId = Random.Shared.Next(100, int.MaxValue);
+            int originalNumberOfAppointments = 0;
+            using (var arrangeContext = CreateDbContext(true))
             {
-                string guid = Guid.NewGuid().ToString();
-                IAppointmentsRepository repository = new AppointmentsRepository(context);
-                var appointment = new Appointment() { Id = 4024, AppointmentDate = DateTime.Today, DoctorId = 7, PatientNationalNumber = guid, Reason = guid };
-                context.Add(appointment);
-                var guid2 = Guid.NewGuid().ToString();
-                appointment.PatientNationalNumber = guid2;
+                appointment = new Appointment()
+                {
+                    Id = appointmentId,
+                    AppointmentDate = DateTime.Today,
+                    DoctorId = 7,
+                    PatientNationalNumber = Guid.NewGuid().ToString(),
+                    Reason = Guid.NewGuid().ToString()
+                };
+                arrangeContext.Add(appointment);
+                arrangeContext.SaveChanges();
+                originalNumberOfAppointments = arrangeContext.Appointments.Count();
+            }
+
+            //Act
+            string newPatientNationalNumber = Guid.NewGuid().ToString();
+            using (var actContext = CreateDbContext(false))
+            {
+                IAppointmentsRepository repository = new AppointmentsRepository(actContext);
+                appointment.PatientNationalNumber = newPatientNationalNumber;
                 repository.Update(appointment);
-                Assert.That(context.Appointments, Does.Contain(appointment), "The appointment list should contain the updated appointment.");
+            }
+
+            //Assert
+            using (var assertContext = CreateDbContext(false))
+            {
+                Appointment? updatedAppointment = assertContext.Set<Appointment>().FirstOrDefault(a => a.Id == appointmentId);
+                Assert.IsNotNull(updatedAppointment);
+                int numberOfAppointments = assertContext.Appointments.Count();
+                Assert.That(numberOfAppointments, Is.EqualTo(originalNumberOfAppointments),
+                    "An appointment was added or deleted instead of updated");
+                Assert.That(updatedAppointment.PatientNationalNumber, Is.EqualTo(newPatientNationalNumber), "The appointment is not updated correctly");
             }
         }
 
         [MonitoredTest("AppointmentsRepository - Delete - Should delete an Appointment")]
         public void _10_Delete_ShouldDeleteAnAppointment()
         {
-            using (var context = CreateDbContext(true))
+            Appointment appointmentToDelete = null!;
+            using (var actContext = CreateDbContext(true))
             {
-                IAppointmentsRepository repository = new AppointmentsRepository(context);
+                IAppointmentsRepository repository = new AppointmentsRepository(actContext);
 
-                var appointmentToDelete = context.Appointments.FirstOrDefault();
+                appointmentToDelete = actContext.Appointments.First();
                 repository.Delete(appointmentToDelete);
-                Assert.That(context.Appointments, Does.Not.Contain(appointmentToDelete), "The appointment list shouldn't contain the deleted appointments.");
+            }
+
+            using (var assertContext = CreateDbContext(true))
+            {
+                Appointment? deletedAppointment = assertContext.Appointments.FirstOrDefault(a => a.Id == appointmentToDelete.Id);
+
+                Assert.That(deletedAppointment, Is.Null, "The appointment is not deleted in the database.");
             }
         }
         
