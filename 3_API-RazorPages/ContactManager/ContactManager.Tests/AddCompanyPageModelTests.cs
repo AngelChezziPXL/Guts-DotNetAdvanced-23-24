@@ -1,90 +1,100 @@
 ﻿using ContactManager.AppLogic.Contracts;
 using ContactManager.Domain;
-using ContactManager.Pages;
+using ContactManager.Pages.Companies;
+using Guts.Client.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
-using System.Reflection;
-using ContactManager.Pages.Companies;
-using Guts.Client.Core;
 
-namespace ContactManager.Tests.Web
+namespace ContactManager.Tests
 {
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
     @"ContactManager\Pages\Companies\AddCompany.cshtml.cs")]
 
     public class AddCompanyPageModelTests
     {
-        private Mock<ICompanyRepository> _mockRepository = null!;
+        private Mock<ICompanyRepository> _companyRepositoryMock = null!;
 
         [SetUp]
         public void Setup()
         {
-            _mockRepository = new Mock<ICompanyRepository>();
+            _companyRepositoryMock = new Mock<ICompanyRepository>();
 
         }
 
-        [MonitoredTest("AddCompanyModel Tests - Should inherit from PageModel")]
+        [MonitoredTest("AddCompanyModel - Should inherit from PageModel")]
         public void _01_AddCompanyModel_ImplementsPageModel()
         {
             // Act
-            var addCompanyModel = new AddCompanyModel(_mockRepository.Object);
+            var addCompanyModel = new AddCompanyModel(_companyRepositoryMock.Object);
 
             // Assert
-            Assert.That(addCompanyModel, Is.InstanceOf<PageModel>(),"The class should inherit from the PageModel class.");
+            Assert.IsInstanceOf<PageModel>(addCompanyModel);
         }
-        
-        [MonitoredTest("AddCompanyModel Tests - Company property has a BindProperty attribute")]
+
+        [MonitoredTest("AddCompanyModel - Company property has a BindProperty attribute")]
         public void _02_CompanyProperty_HasBindPropertyAttribute()
         {
             // Arrange
             var companyProperty = typeof(AddCompanyModel).GetProperty("Company");
 
-            Assert.That(companyProperty, Is.Not.Null, "The AddCompanyModel class musth have a Company property");
             // Act
-            var hasBindPropertyAttribute = companyProperty.GetCustomAttributes(typeof(BindPropertyAttribute), false).Any();
+            var hasBindPropertyAttribute = companyProperty!.GetCustomAttributes(typeof(BindPropertyAttribute), false).Any();
 
             // Assert
             Assert.That(hasBindPropertyAttribute, Is.True, "The Company property should have the [BindProperty] attribute.");
         }
 
-        [MonitoredTest("AddCompanyModel Tests - OnPostWithValidModel should add the Company an Redirect to the Index Page")]
-        public void _03_OnPost_WithValidModel_CallsAddCompanyAndRedirects()
+        [MonitoredTest("AddCompanyModel - Constructor should initialize an empty contact")]
+        public void _03_Constructor_ShouldInitializeAnEmptyContact()
+        {
+            //Act
+            var model = new AddCompanyModel(_companyRepositoryMock.Object);
+
+            //Assert
+            Assert.That(model.Company, Is.Not.Null);
+        }
+
+        [MonitoredTest("AddCompanyModel - OnPost - WithValidModel - Should add the Company an Redirect to the Index Page")]
+        public void _04_OnPost_WithValidModel_CallsAddCompanyAndRedirects()
         {
             // Arrange
             var company = new Company { Name = Guid.NewGuid().ToString() };
-            var addCompanyModel = new AddCompanyModel(_mockRepository.Object);
-            addCompanyModel.Company = company;
+            var addCompanyModel = new AddCompanyModel(_companyRepositoryMock.Object)
+            {
+                Company = company
+            };
 
             // Act
             IActionResult result = addCompanyModel.OnPost();
 
             // Assert
-            Assert.That(result, Is.InstanceOf<RedirectToPageResult>(), "The OnPost method should return a redirectToPage result.");
+            Assert.That(result, Is.InstanceOf<RedirectToPageResult>(), "The OnPost method should return a redirectToPage result");
             var redirectToPageResult = (RedirectToPageResult)result;
-            Assert.That(redirectToPageResult.PageName, Is.EqualTo("/Index"), "The OnPost method should redirect to the Index Page.");
+            Assert.That(redirectToPageResult.PageName == "/Index", Is.True, "The OnPost method should redirect to the Index Page");
 
-            _mockRepository.Verify(repo => repo.AddCompany(company), Times.Once, "The AddCompany repository method should be called once.");
+            _companyRepositoryMock.Verify(repo => repo.AddCompany(company), Times.Once, "The repository is not used correctly to add the company");
         }
 
-        [MonitoredTest("AddCompanyModel Tests - OnPostWithInValidModel should not add the Company an Redirect to the Index Page")]
-        public void _04_OnPost_WithInvalidModel_DoesNotCallAddCompanyAndRedirectsToIndex()
+        [MonitoredTest("AddCompanyModel - OnPost - WithInValidModel - Should stay on the page")]
+        public void _05_OnPost_WithInvalidModel_ShouldStayOnPage()
         {
             // Arrange
             var company = new Company();
-            var addCompanyModel = new AddCompanyModel(_mockRepository.Object);
-            addCompanyModel.Company = company;
+            var addCompanyModel = new AddCompanyModel(_companyRepositoryMock.Object)
+            {
+                Company = company
+            };
             addCompanyModel.ModelState.AddModelError("Company.Name", "The Name field is required.");
 
             // Act
-            IActionResult result = addCompanyModel.OnPost();
+            PageResult? result = addCompanyModel.OnPost() as PageResult;
 
             // Assert
-            Assert.That(result, Is.InstanceOf<RedirectToPageResult>(), "The Post action method with an invalid Model should return a redirectToPage result. ");
-            var redirectToPageResult = (RedirectToPageResult)result;
-            Assert.That(redirectToPageResult.PageName, Is.EqualTo("/Index"), "The OnPost method should return a redirectToPage result");
+            Assert.That(result, Is.Not.Null, "A 'PageResult' should be returned");
+            Assert.That(result!.Page, Is.Null, "A 'PageResult' with 'Page' null should be returned");
 
-            _mockRepository.Verify(repo => repo.AddCompany(It.IsAny<Company>()), Times.Never, "The repository method AddCompany has to be called 0 times.");
+            _companyRepositoryMock.Verify(repo => repo.AddCompany(It.IsAny<Company>()), Times.Never);
         }
     }
 }

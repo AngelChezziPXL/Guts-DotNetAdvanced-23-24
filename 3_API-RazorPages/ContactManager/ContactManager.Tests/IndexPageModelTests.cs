@@ -5,9 +5,8 @@ using Guts.Client.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
-using System.Reflection;
 
-namespace ContactManager.Tests.Web
+namespace ContactManager.Tests
 {
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
     @"ContactManager\Pages\Index.cshtml.cs")]
@@ -32,23 +31,9 @@ namespace ContactManager.Tests.Web
             Assert.That(indexModel, Is.InstanceOf<PageModel>(), "The indexModel class has to inherit from PageModel"); ;
         }
 
-        [MonitoredTest("Index Model Tests - Contacts property has a BindProperty attribute")]
-        public void _02_ContactsProperty_HasBindPropertyAttribute()
-        {
-            // Arrange
-            var contactsProperty = typeof(IndexModel).GetProperty("Contacts");
-
-            Assert.That(contactsProperty, Is.Not.Null, "The Index Model class must have a Contacts property");
-            // Act
-            var hasBindPropertyAttribute = contactsProperty.GetCustomAttributes(typeof(BindPropertyAttribute), false).Any();
-            
-
-            // Assert
-            Assert.That(hasBindPropertyAttribute, Is.True, "The Contacts property should have the [BindProperty] attribute.");
-        }
 
         [MonitoredTest("Index Model Tests - OnGet populates the Contacts property with repository data")]
-        public void _03_OnGet_PopulatesContacts_WithRepositoryData()
+        public void _02_OnGet_PopulatesContacts_WithRepositoryData()
         {
             // Arrange
             var mockRepository = new Mock<IContactRepository>();

@@ -1,13 +1,9 @@
-﻿using AngleSharp.Html.Parser;
-using ContactManager.AppLogic.Contracts;
-using ContactManager.Pages;
+﻿using System.Net;
+using AngleSharp.Html.Parser;
 using Guts.Client.Core;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Moq;
-using System.Net;
 
-namespace ContactManager.Tests.Web
+namespace ContactManager.Tests
 {
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
 @"ContactManager\Pages\Index.cshtml")]

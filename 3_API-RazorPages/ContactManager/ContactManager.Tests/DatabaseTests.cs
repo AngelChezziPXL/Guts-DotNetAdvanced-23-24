@@ -1,10 +1,10 @@
-﻿using ContactManager.Domain;
+﻿using System.Text;
+using ContactManager.Domain;
 using ContactManager.Infrastructure;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 
-namespace ContactManager.Tests.Infrastructure
+namespace ContactManager.Tests
 {
     internal class DatabaseTests:IDisposable
     {

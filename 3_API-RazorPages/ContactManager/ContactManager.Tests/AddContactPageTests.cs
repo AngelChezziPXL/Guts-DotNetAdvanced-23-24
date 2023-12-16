@@ -1,9 +1,11 @@
-﻿using AngleSharp.Html.Parser;
+﻿using System.Net;
+using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
 using Guts.Client.Core;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System.Net;
 
-namespace ContactManager.Tests.Web
+namespace ContactManager.Tests
 {
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
 @"ContactManager\Pages\Contacts\AddContact.cshtml")]
@@ -34,30 +36,27 @@ namespace ContactManager.Tests.Web
         public async Task _02_AddContactPage_ShouldContainExpectedHtmlContent()
         {
             // Act
-            var response = await _client.GetAsync("Contacts/AddContact");
+            HttpResponseMessage response = await _client.GetAsync("Contacts/AddContact");
 
             // Assert
             response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
+            string content = await response.Content.ReadAsStringAsync();
 
             var parser = new HtmlParser();
-            var document = parser.ParseDocument(content);
+            IHtmlDocument document = parser.ParseDocument(content);
 
-            var form = document.QuerySelector("form");
+            IElement? form = document.QuerySelector("form");
 
             Assert.That(form, Is.Not.Null, "The page has to contain a <form> element");
 
-            var fields = form.QuerySelectorAll("input");
-            var button = form.QuerySelector("button");
+            IHtmlCollection<IElement> fields = form!.QuerySelectorAll("input");
 
-            var selectElement = document.QuerySelector("select#CompanyId");
-
+            var selectElement = form.QuerySelector("select");
             Assert.That(selectElement, Is.Not.Null, "The page has to contain a select list");
-            var selectOptions = selectElement.QuerySelectorAll("option");
 
+            var selectOptions = selectElement!.QuerySelectorAll("option");
 
-            List<string> expectedNames = new List<string> { "FirstName", "Name", "Email", "Phone" };
-
+            List<string> expectedNames = new List<string> { "Contact.FirstName", "Contact.Name", "Contact.Email", "Contact.Phone" };
             List<string?> actualNames = fields.Where(input => !string.IsNullOrEmpty(input.GetAttribute("id")))
             .Select(input => input.GetAttribute("name"))
             .ToList();
@@ -66,10 +65,18 @@ namespace ContactManager.Tests.Web
             Assert.That(actualNames, Is.EquivalentTo(expectedNames), "The form should contain the expected input fields");
 
             Assert.That(
-        selectOptions.Any(option => option.GetAttribute("value") == ""),
-        Is.True,
-        "The 'Select a company' option should be present in the select element."
-    );
+                selectOptions.Any(option => option.GetAttribute("value") == ""),
+                Is.True,
+                "The 'Select a company' option should be present in the select element."
+            );
+
+            IHtmlButtonElement? button = form.QuerySelector("button") as IHtmlButtonElement;
+            Assert.That(button, Is.Not.Null, "The form should have a button");
+            Assert.That(button!.Type, Is.EqualTo("submit"), "The button should be a submit button");
+
+            IElement? validationSummaryDiv = document.QuerySelector("div.validation-summary-valid");
+            Assert.That(validationSummaryDiv, Is.Not.Null,
+                "The page has to contain a div in which a summary of validation errors can be displayed");
         }
     }
 }

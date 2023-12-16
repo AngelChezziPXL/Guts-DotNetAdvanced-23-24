@@ -1,12 +1,10 @@
 ﻿using ContactManager.Domain;
-using ContactManager.Infrastructure;
 using Guts.Client.Core;
 using Guts.Client.Core.TestTools;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.EntityFrameworkCore;
 
-namespace ContactManager.Tests.Infrastructure
+namespace ContactManager.Tests
 {
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
     @"ContactManager.Infrastructure\ContactManagerDbContext.cs")]

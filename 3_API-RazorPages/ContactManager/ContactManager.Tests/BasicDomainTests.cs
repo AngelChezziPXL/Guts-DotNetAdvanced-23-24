@@ -1,58 +1,49 @@
-﻿using ContactManager.Domain;
-using Guts.Client.Core;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using System.Security.AccessControl;
+using ContactManager.Domain;
+using Guts.Client.Core;
 
-namespace ContactManager.Tests.Domain
+namespace ContactManager.Tests
 {  
     [ExerciseTestFixture("dotnet2", "3-RAZORWEBAPI", "ContactManager",
     @"ContactManager.Domain\Company.cs;ContactManager.Domain\Contact.cs")]
 
     internal class BasicDomainTests
     {
-        [MonitoredTest("Domain - Company - should contain the correct properties")]
-        public void _01_CompanyShouldContainCorrectProperties()
+        [MonitoredTest("Domain - Company - Should use data annotations that are used during Model Binding")]
+        public void _01_Company_ShouldUseDataAnnotationsThatAreUsedDuringModelBinding()
         {
             Type companyType = typeof(Company);
 
-            PropertyInfo[] properties = companyType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
-            Assert.That(properties.Count, Is.EqualTo(6), "Class Company should have 5 properties (with getter and setter)");
-            Assert.That(properties.Any(p => p.Name == "Id"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "Name"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "Address"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "Zip"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "City"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "Contacts"), Is.True);
-
-
-            ConstructorInfo[] constructors = companyType.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
-            ConstructorInfo constructor = constructors.First();
-            ParameterInfo[] parameters = constructor.GetParameters();
-            Assert.That(constructors.Length, Is.EqualTo(1), "There should be exactly one public constructor.");
-            Assert.That(parameters.Length, Is.EqualTo(0), "The constructor should have 0 parameters.");
+            PropertyInfo nameProperty = companyType.GetProperty(nameof(Company.Name))!;
+            AssertMaxLength(nameProperty, 100);
+            PropertyInfo addressProperty = companyType.GetProperty(nameof(Company.Address))!;
+            AssertMaxLength(addressProperty, 100);
+            PropertyInfo zipProperty = companyType.GetProperty(nameof(Company.Zip))!;
+            AssertMaxLength(zipProperty, 10);
+            PropertyInfo cityProperty = companyType.GetProperty(nameof(Company.City))!;
+            AssertMaxLength(cityProperty, 50);
         }
 
-        [MonitoredTest("Domain - Contact = should contain the correct properties")]
-        public void _02_ContactShouldContainCorrectProperties()
+        [MonitoredTest("Domain - Contact - Should use data annotations that are used during Model Binding")]
+        public void _02_Contact_ShouldUseDataAnnotationsThatAreUsedDuringModelBinding()
         {
             Type contactType = typeof(Contact);
 
-            PropertyInfo[] properties = contactType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
-            Assert.That(properties.Count, Is.EqualTo(7), "Class Contact should have 7 properties (with getter and setter)");
-            Assert.That(properties.Any(p => p.Name == "Id"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "Name"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "FirstName"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "Email"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "Phone"), Is.True);
+            PropertyInfo nameProperty = contactType.GetProperty(nameof(Contact.Name))!;
+            AssertMaxLength(nameProperty, 100);
 
-            Assert.That(properties.Any(p => p.Name == "CompanyId"), Is.True);
-            Assert.That(properties.Any(p => p.Name == "Company"), Is.True);
+            PropertyInfo firstNameProperty = contactType.GetProperty(nameof(Contact.FirstName))!;
+            AssertMaxLength(firstNameProperty, 100);
 
-            ConstructorInfo[] constructors = contactType.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
-            ConstructorInfo constructor = constructors.First();
-            ParameterInfo[] parameters = constructor.GetParameters();
-            Assert.That(constructors.Length, Is.EqualTo(1), "There should be exactly one public constructor.");
-            Assert.That(parameters.Length, Is.EqualTo(0), "The constructor should have 0 parameters.");
+            PropertyInfo emailProperty = contactType.GetProperty(nameof(Contact.Email))!;
+            AssertMaxLength(emailProperty, 100);
+            EmailAddressAttribute? emailAddressAttribute = emailProperty.GetCustomAttribute<EmailAddressAttribute>();
+            Assert.That(emailAddressAttribute, Is.Not.Null,
+                $"The {emailProperty.Name} property should be validated as an email address during ModelBinding");
+
+            PropertyInfo phoneProperty = contactType.GetProperty(nameof(Contact.Phone))!;
+            AssertMaxLength(phoneProperty, 20);
         }
 
         [MonitoredTest("Domain - Company and Contact - should do the necessary null checks and initializations")]
@@ -71,6 +62,15 @@ namespace ContactManager.Tests.Domain
             Assert.That(contact.FirstName, Is.Not.Null, "The firstname of the contact can not be null after constructing a Contact.");
             Assert.That(contact.Email, Is.Not.Null, "The email of the contact can not be null after constructing a Contact.");
             Assert.That(contact.Phone, Is.Not.Null, "The phone of the contact can not be null after constructing a Contact.");
+        }
+
+        private void AssertMaxLength(PropertyInfo property, int maxLength)
+        {
+            MaxLengthAttribute? maxLengthAttribute = property.GetCustomAttribute<MaxLengthAttribute>();
+
+            Assert.That(maxLengthAttribute, Is.Not.Null,
+                $"The {property.Name} property should have a maximum length that is used during ModelBinding");
+            Assert.That(maxLengthAttribute!.Length, Is.EqualTo(maxLength), $"The maximum length of {property.Name} should be {maxLength}");
         }
     }
 }
