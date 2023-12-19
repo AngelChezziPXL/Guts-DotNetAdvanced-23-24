@@ -3,6 +3,7 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using Guts.Client.Core;
+using Guts.Client.Core.TestTools;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace ContactManager.Tests
@@ -14,12 +15,14 @@ namespace ContactManager.Tests
     {
         private WebApplicationFactory<Program> _factory = null!;
         private HttpClient _client = null!;
+        private string _razorContentLowerCase = string.Empty;
 
         [OneTimeSetUp]
         public void Setup()
         {
             _factory = new WebApplicationFactory<Program>();
             _client = _factory.CreateClient();
+            _razorContentLowerCase = Solution.Current.GetFileContent("ContactManager/Pages/Contacts/AddContact.cshtml").ToLower();
         }
 
         [MonitoredTest("Html Integration Tests - Razor Page - AddContact - Should return a success Status Code")]
@@ -77,6 +80,16 @@ namespace ContactManager.Tests
             IElement? validationSummaryDiv = document.QuerySelector("div.validation-summary-valid");
             Assert.That(validationSummaryDiv, Is.Not.Null,
                 "The page has to contain a div in which a summary of validation errors can be displayed");
+        }
+
+        [MonitoredTest("Html Integration Tests - Razor Page - AddContact - Company dropdown should be rendered using tag helpers")]
+        public void _03_AddContactPage_CompanyDropDown_ShouldBeRenderedUsingTagHelpers()
+        {
+            string message = "Do not use option tags, but use a tag helper. " +
+                             "See https://learn.microsoft.com/en-us/aspnet/core/mvc/views/working-with-forms?view=aspnetcore-6.0#the-select-tag-helper";
+
+            Assert.That(_razorContentLowerCase, Does.Not.Contain("<option"), message);
+            Assert.That(_razorContentLowerCase, Does.Contain("asp-items"), message);
         }
     }
 }
