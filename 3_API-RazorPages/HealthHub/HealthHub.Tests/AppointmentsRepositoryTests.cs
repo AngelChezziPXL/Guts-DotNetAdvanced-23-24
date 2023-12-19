@@ -134,7 +134,7 @@ namespace HealthHub.Tests
                 context.Appointments.Add(appointment2);
 
                 context.SaveChanges();
-                IEnumerable<Appointment> returnedAppointments = repository.GetAppointmentsForPatient(guid);
+                IEnumerable<Appointment> returnedAppointments = repository.GetUpcomingAppointments(10);
 
                 Assert.That(returnedAppointments.Count, Is.EqualTo(2), "The appointment list should contain 2 appointments.");
             }
