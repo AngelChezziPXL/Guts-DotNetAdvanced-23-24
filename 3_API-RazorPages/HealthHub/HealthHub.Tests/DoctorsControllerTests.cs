@@ -345,7 +345,7 @@ namespace HealthHub.Tests
 
         private static MethodInfo GetMethodInfo(string methodName, params Type[] parameterTypes)
         {
-            var controllerType = typeof(AppointmentsController);
+            var controllerType = typeof(DoctorsController);
             var methodInfo = controllerType.GetMethod(methodName, parameterTypes);
 
             Assert.That(methodInfo, Is.Not.Null, $"Method with name '{methodName}' and specified parameters not found in {controllerType.Name}.");
