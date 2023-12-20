@@ -6,6 +6,7 @@ using HealthHub.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Moq;
+using System.Reflection;
 
 namespace HealthHub.Tests
 {
@@ -37,7 +38,7 @@ namespace HealthHub.Tests
             var result = _appointmentsController.Get() as OkObjectResult;
 
             // Assert
-            Assert.That(result,Is.Not.Null);
+            Assert.That(result, Is.Not.Null);
             var appointments = result.Value as IEnumerable<Appointment>;
             Assert.That(appointments, Is.Not.Null, "The Get action method should return a list of appointments.");
             Assert.That(appointments, Is.SameAs(appointmentList), "The Get action method should return the correct list of appointments.");
@@ -78,7 +79,7 @@ namespace HealthHub.Tests
         public void _04_Post_ValidModelState_AddsNewAppointment_ReturnsCreatedAtAction()
         {
             // Arrange
-            var newAppointment = new Appointment { Id = 3, AppointmentDate=DateTime.Today, DoctorId=1, PatientNationalNumber=Guid.NewGuid().ToString(), Reason=Guid.NewGuid().ToString() };
+            var newAppointment = new Appointment { Id = 3, AppointmentDate = DateTime.Today, DoctorId = 1, PatientNationalNumber = Guid.NewGuid().ToString(), Reason = Guid.NewGuid().ToString() };
 
             // Act
             var result = _appointmentsController.Post(newAppointment) as CreatedAtActionResult;
@@ -97,7 +98,7 @@ namespace HealthHub.Tests
             Assert.That(newAppointment, Is.SameAs(createdAppointment), "The correct appointment object is created by the Post method.");
 
             // Verify
-            _appointmentsRepositoryMock.Verify(repo => repo.Add(newAppointment), Times.Once,"The Add repository method should be called Once.");
+            _appointmentsRepositoryMock.Verify(repo => repo.Add(newAppointment), Times.Once, "The Add repository method should be called Once.");
         }
 
         [MonitoredTest("AppointmentsController Tests - Post with an invalid ModelState should return a BadRequest result")]
@@ -112,7 +113,7 @@ namespace HealthHub.Tests
             var result = _appointmentsController.Post(invalidAppointment) as BadRequestObjectResult;
 
             // Assert
-            Assert.That(result, Is.Not.Null,"The Post method with an invalid modelstate, should return a BadRequestObjectResult.");
+            Assert.That(result, Is.Not.Null, "The Post method with an invalid modelstate, should return a BadRequestObjectResult.");
             Assert.That(result.StatusCode, Is.EqualTo(400), "The Post method with an invalid modelstate, should return a 400 statuscode.");
 
             // Verify
@@ -125,7 +126,7 @@ namespace HealthHub.Tests
             // Arrange
             var appointmentId = 1;
             var existingAppointment = new Appointment { Id = appointmentId, AppointmentDate = DateTime.Today };
-            var updatedAppointment = new Appointment { Id = appointmentId, AppointmentDate = DateTime.Today.AddDays(10)};
+            var updatedAppointment = new Appointment { Id = appointmentId, AppointmentDate = DateTime.Today.AddDays(10) };
 
             _appointmentsRepositoryMock.Setup(repo => repo.GetById(existingAppointment.Id)).Returns(existingAppointment);
 
@@ -174,5 +175,165 @@ namespace HealthHub.Tests
             _appointmentsRepositoryMock.Verify(repo => repo.Delete(existingAppointment), Times.Once, "The delete method with valid Id, should call the repository delete method once.");
         }
 
+
+
+        [MonitoredTest("AppointmentsController Tests - Controller should have Route Attribute")]
+        public void _9_AppointmentsController_Should_Have_RouteAttribute()
+        {
+            // Arrange
+            var controllerType = typeof(AppointmentsController);
+
+            // Act
+            var routeAttribute = controllerType.GetCustomAttributes(typeof(RouteAttribute), true)
+                                               .FirstOrDefault() as RouteAttribute;
+
+            // Assert
+            Assert.That(routeAttribute, Is.Not.Null, "AppointmentsController should have a Route attrubute");
+            Assert.That(routeAttribute.Template, Is.EqualTo("api/[controller]"), "DoctorsController should have a Route attrubute with the correct template");
+        }
+
+
+        [MonitoredTest("AppointmentsController Tests - Get Action without parameters Should have a HttpGet Attribute")]
+        public void _10_GetActionWithoutParameter_ShouldHaveHttpGetAttribute()
+        {
+            // Arrange
+            var methodInfo = GetMethodWithoutParametersInfo(nameof(AppointmentsController.Get));
+
+            // Act
+            var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
+                                             .FirstOrDefault() as HttpGetAttribute;
+
+            // Assert
+            Assert.That(httpGetAttribute, Is.Not.Null, "The Get method (without parameter) of the AppointmentsController should have a HttpGet attrubute");
+            Assert.That(httpGetAttribute.Template, Is.Null, "The Get method (without parameter) of the AppointmentsController, shouldn't have a template");
+        }
+
+        [MonitoredTest("AppointmentsController Tests - Get Action with one integer parameter should have a HttpGet attribute")]
+        public void _11_GetActionWithParameter_ShouldHaveHttpGetAttribute()
+        {
+            // Arrange
+            var methodInfo = GetMethodInfo(nameof(AppointmentsController.Get), typeof(int));
+
+            // Act
+            var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
+                                             .FirstOrDefault() as HttpGetAttribute;
+
+            // Assert
+            Assert.That(httpGetAttribute, Is.Not.Null, "The Get method (with parameter) of the AppointmentsController should have a HttpGet attrubute");
+            Assert.That(httpGetAttribute.Template, Is.EqualTo("{id}"), "The Get method (with parameter) should have a HttpGet attribute with the correct template");
+        }
+
+        [MonitoredTest("AppointmentsController Tests - GetAppointmentsForDoctor method Should Have a HttpGet Attribute")]
+        public void _12_GetAppointmentsForDoctor_ShouldHaveHttpGetAttribute()
+        {
+            // Arrange
+            var methodInfo = GetMethodInfo(nameof(AppointmentsController.GetAppointmentsForDoctor), typeof(int));
+
+            // Act
+            var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
+                                             .FirstOrDefault() as HttpGetAttribute;
+
+            // Assert
+            Assert.That(httpGetAttribute, Is.Not.Null, "The GetAppointmentsForDoctor method of the AppointmentsController should have a HttpGet attrubute");
+            Assert.That(httpGetAttribute.Template, Is.EqualTo("doctor/{doctorId}"), "The Get method (with parameter) should have a HttpGet attribute with the correct template");
+        }
+
+        [MonitoredTest("AppointmentsController Tests - GetAppointmentsForPatient method Should Have a HttpGet Attribute")]
+        public void _13_GetAppointmentsForPatient_ShouldHaveHttpGetAttribute()
+        {
+            // Arrange
+            var methodInfo = GetMethodInfo(nameof(AppointmentsController.GetAppointmentsForPatient), typeof(string));
+
+            // Act
+            var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
+                                             .FirstOrDefault() as HttpGetAttribute;
+
+            // Assert
+            Assert.That(httpGetAttribute, Is.Not.Null, "The GetAppointmentsForPatient method of the AppointmentsController should have a HttpGet attrubute");
+            Assert.That(httpGetAttribute.Template, Is.EqualTo("patient/{patientNationalNumber}"), "The GetAppointmentsForPatient method (with parameter) should have a HttpGet attribute with the correct template");
+        }
+
+        [MonitoredTest("AppointmentsController Tests - GetUpcomingAppointments method Should Have a HttpGet Attribute")]
+        public void _14_GetUpcomingAppointments_ShouldHaveHttpGetAttribute()
+        {
+            // Arrange
+            var methodInfo = GetMethodInfo(nameof(AppointmentsController.GetUpcomingAppointments), typeof(int));
+
+            // Act
+            var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
+                                             .FirstOrDefault() as HttpGetAttribute;
+
+            // Assert
+            Assert.That(httpGetAttribute, Is.Not.Null, "The GetUpcomingAppointments method of the AppointmentsController should have a HttpGet attrubute");
+            Assert.That(httpGetAttribute.Template, Is.EqualTo("upcoming"), "The GetUpcomingAppointments method (with parameter) should have a HttpGet attribute with the correct template");
+        }
+
+        [MonitoredTest("AppointmentsController Tests - Post action method Should Have a HttpPost Attribute")]
+        public void _15_PostAction_ShouldHaveHttpPostAttribute()
+        {
+            // Arrange
+            var methodInfo = GetMethodInfo(nameof(AppointmentsController.Post), typeof(Appointment));
+
+            // Act
+            var httpPostAttribute = methodInfo.GetCustomAttributes(typeof(HttpPostAttribute), true)
+                                             .FirstOrDefault() as HttpPostAttribute;
+
+            // Assert
+            Assert.That(httpPostAttribute, Is.Not.Null, "The Post method of the DoctorsController should have a HttpPost attrubute");
+        }
+
+        [MonitoredTest("AppointmentsController Tests - Put action method Should Have a HttpPut Attribute")]
+        public void _16_PutAction_ShouldHaveHttpPutAttribute()
+        {
+            // Arrange
+            Type[] typesArray = { typeof(int), typeof(Appointment) };
+            var methodInfo = GetMethodInfo(nameof(AppointmentsController.Put), typesArray);
+
+            // Act
+            var httpPutAttribute = methodInfo.GetCustomAttributes(typeof(HttpPutAttribute), true)
+                                             .FirstOrDefault() as HttpPutAttribute;
+
+            // Assert
+            Assert.That(httpPutAttribute, Is.Not.Null, "The Put method of the appointmentsController should have a HttpPut attrubute");
+            Assert.That(httpPutAttribute.Template, Is.EqualTo("{id}"), "The Put method should have a HttpPut attribute with the correct template");
+
+        }
+
+        [MonitoredTest("AppointmentsController Tests - Delete action method Should Have a HttpDelete Attribute")]
+        public void _17_DeleteAction_ShouldHaveHttpDeleteAttribute()
+        {
+            // Arrange
+            var methodInfo = GetMethodInfo(nameof(DoctorsController.Delete), typeof(int));
+
+            // Act
+            var httpDeleteAttribute = methodInfo.GetCustomAttributes(typeof(HttpDeleteAttribute), true)
+                                             .FirstOrDefault() as HttpDeleteAttribute;
+
+            // Assert
+            Assert.That(httpDeleteAttribute, Is.Not.Null, "The Delete method of the DoctorsController should have a HttpPost attrubute");
+            Assert.That(httpDeleteAttribute.Template, Is.EqualTo("{id}"), "The Delete method should have a HttpDelete attribute with the correct template");
+
+        }
+
+
+        private static MethodInfo GetMethodInfo(string methodName, params Type[] parameterTypes)
+        {
+            var controllerType = typeof(AppointmentsController);
+            var methodInfo = controllerType.GetMethod(methodName, parameterTypes);
+
+            Assert.That(methodInfo, Is.Not.Null, $"Method with name '{methodName}' and specified parameters not found in {controllerType.Name}.");
+
+            return methodInfo;
+        }
+
+        private static MethodInfo GetMethodWithoutParametersInfo(string methodName, params Type[] parameterTypes)
+        {
+            var controllerType = typeof(DoctorsController);
+            var methodInfo = controllerType.GetMethod(methodName, Type.EmptyTypes);
+
+            Assert.That(methodInfo, Is.Not.Null, $"Method with name '{methodName}' and specified parameters not found in {controllerType.Name}.");
+
+            return methodInfo;
+        }
     }
 }
