@@ -316,16 +316,16 @@ namespace HealthHub.Tests
         public void _16_PutAction_ShouldHaveHttpPutAttribute()
         {
             // Arrange
-            Type[] typesArray = { typeof(int), typeof(Appointment) };
-            var methodInfo = GetMethodInfo(nameof(AppointmentsController.Put), typesArray);
+            Type[] typesArray = { typeof(int), typeof(Doctor) };
+            var methodInfo = GetMethodInfo(nameof(DoctorsController.Put), typesArray);
 
             // Act
             var httpPutAttribute = methodInfo.GetCustomAttributes(typeof(HttpPutAttribute), true)
-                                             .FirstOrDefault() as HttpPutAttribute;
+                .FirstOrDefault() as HttpPutAttribute;
 
             // Assert
-            Assert.That(httpPutAttribute, Is.Not.Null, "The Put method of the appointmentsController should have a HttpPut attrubute");
-            Assert.That(httpPutAttribute.Template, Is.EqualTo("{id}"), "The Put method should have a HttpPut attribute with the correct template");
+            Assert.That(httpPutAttribute, Is.Not.Null, "The Put method of the DoctorsController should have a HttpPut attribute");
+            Assert.That(httpPutAttribute!.Template, Is.EqualTo("{id}"), "The Put method should have a HttpPut attribute with the correct template");
         }
 
         [MonitoredTest("DoctorsController Tests - Delete Action method Should Have a HttpDelete Attribute")]
@@ -336,14 +336,12 @@ namespace HealthHub.Tests
 
             // Act
             var httpDeleteAttribute = methodInfo.GetCustomAttributes(typeof(HttpDeleteAttribute), true)
-                                             .FirstOrDefault() as HttpDeleteAttribute;
+                .FirstOrDefault() as HttpDeleteAttribute;
 
             // Assert
-            Assert.That(httpDeleteAttribute, Is.Not.Null, "The Delete method of the DoctorsController should have a HttpPost attrubute");
-            Assert.That(httpDeleteAttribute.Template, Is.EqualTo("{id}"), "The Delete method should have a HttpDelete attribute with the correct template");
-
+            Assert.That(httpDeleteAttribute, Is.Not.Null, "The Delete method of the DoctorsController should have a HttpDelete attribute");
+            Assert.That(httpDeleteAttribute!.Template, Is.EqualTo("{id}"), "The Delete method should have a HttpDelete attribute with the correct template");
         }
-
 
         private static MethodInfo GetMethodInfo(string methodName, params Type[] parameterTypes)
         {
@@ -352,7 +350,7 @@ namespace HealthHub.Tests
 
             Assert.That(methodInfo, Is.Not.Null, $"Method with name '{methodName}' and specified parameters not found in {controllerType.Name}.");
 
-            return methodInfo;
+            return methodInfo!;
         }
 
         private static MethodInfo GetMethodWithoutParametersInfo(string methodName, params Type[] parameterTypes)
@@ -362,7 +360,7 @@ namespace HealthHub.Tests
 
             Assert.That(methodInfo, Is.Not.Null, $"Method with name '{methodName}' and specified parameters not found in {controllerType.Name}.");
 
-            return methodInfo;
+            return methodInfo!;
         }
     }
 }
