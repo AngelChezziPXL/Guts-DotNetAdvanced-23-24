@@ -223,86 +223,72 @@ namespace HealthHub.Tests
             _doctorsRepositoryMock.Verify(repo => repo.GetDoctorsBySpecialty(It.IsAny<int>()), Times.Once, "The GetDoctorBySpecialty method, should call the GetDoctorsBySpecialty repository method once.");
         }
 
-        [MonitoredTest("DoctorsController Tests - Get Action method Without Parameter Should Have a HttpGetAttribute")]
-        public void _10_GetActionWithoutParameter_ShouldHaveHttpGetAttribute()
+        [MonitoredTest("DoctorsController Tests - Controller should have a route attribute")]
+        public void _10_DoctorsController_Should_Have_RouteAttribute()
         {
             // Arrange
-            var methodInfo = GetMethodWithoutParametersInfo(nameof(AppointmentsController.Get));
+            var controllerType = typeof(DoctorsController);
 
             // Act
-            var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
-                                             .FirstOrDefault() as HttpGetAttribute;
+            var routeAttribute = controllerType.GetCustomAttributes(typeof(RouteAttribute), true)
+                                               .FirstOrDefault() as RouteAttribute;
 
             // Assert
-            Assert.That(httpGetAttribute, Is.Not.Null, "The Get method (without parameter) of the AppointmentsController should have a HttpGet attrubute");
-            Assert.That(httpGetAttribute.Template, Is.Null, "The Get method (without parameter) of the AppointmentsController, shouldn't have a template");
+            Assert.That(routeAttribute, Is.Not.Null, "DoctorsController should have a Route attrubute");
+            Assert.That(routeAttribute.Template, Is.EqualTo("api/[controller]"), "DoctorsController should have a Route attrubute with the correct template");
         }
 
-        [MonitoredTest("DoctorsController Tests - Get Action method With Parameter Should Have a HttpGet Attribute")]
-        public void _11_GetActionWithParameter_ShouldHaveHttpGetAttribute()
+
+        [MonitoredTest("DoctorsController Tests - Get Action without parameter should have a HttpGetAttribute")]
+        public void _11_GetActionWithoutParameter_ShouldHaveHttpGetAttribute()
         {
             // Arrange
-            var methodInfo = GetMethodInfo(nameof(AppointmentsController.Get), typeof(int));
+            var methodInfo = GetMethodWithoutParametersInfo(nameof(DoctorsController.Get));
 
             // Act
             var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
                                              .FirstOrDefault() as HttpGetAttribute;
 
             // Assert
-            Assert.That(httpGetAttribute, Is.Not.Null, "The Get method (with parameter) of the AppointmentsController should have a HttpGet attrubute");
+            Assert.That(httpGetAttribute, Is.Not.Null, "The Get method (without parameter) of the DoctorsController should have a HttpGet attrubute");
+            Assert.That(httpGetAttribute.Template, Is.Null, "The Get method (without parameter) of the DoctorsController, shouldn't have a template");
+        }
+
+        [MonitoredTest("DoctorsController Tests - Get Action with parameter should have a HttpGetAttribute")]
+        public void _12_GetActionWithParameter_ShouldHaveHttpGetAttribute()
+        {
+            // Arrange
+            var methodInfo = GetMethodInfo(nameof(DoctorsController.Get), typeof(int));
+
+            // Act
+            var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
+                                             .FirstOrDefault() as HttpGetAttribute;
+
+            // Assert
+            Assert.That(httpGetAttribute, Is.Not.Null, "The Get method (with parameter) of the DoctorsController should have a HttpGet attrubute");
             Assert.That(httpGetAttribute.Template, Is.EqualTo("{id}"), "The Get method (with parameter) should have a HttpGet attribute with the correct template");
         }
 
-        [MonitoredTest("DoctorsController Tests - GetAppointmentsForDoctor Should Have a HttpGet Attribute")]
-        public void _12_GetAppointmentsForDoctor_ShouldHaveHttpGetAttribute()
+        [MonitoredTest("DoctorsController Tests - GetDoctorsBySpecialty should have a HttpGetAttribute")]
+        public void _13_GetDoctorsBySpecialty_ShouldHaveHttpGetAttribute()
         {
             // Arrange
-            var methodInfo = GetMethodInfo(nameof(AppointmentsController.GetAppointmentsForDoctor), typeof(int));
+            var methodInfo = GetMethodInfo(nameof(DoctorsController.GetDoctorsBySpecialty), typeof(int));
 
             // Act
             var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
                                              .FirstOrDefault() as HttpGetAttribute;
 
             // Assert
-            Assert.That(httpGetAttribute, Is.Not.Null, "The GetAppointmentsForDoctor method of the AppointmentsController should have a HttpGet attrubute");
-            Assert.That(httpGetAttribute.Template, Is.EqualTo("doctor/{doctorId}"), "The Get method (with parameter) should have a HttpGet attribute with the correct template");
+            Assert.That(httpGetAttribute, Is.Not.Null, "The GetDoctorsBySpecialty method of the DoctorsController should have a HttpGet attrubute");
+            Assert.That(httpGetAttribute.Template, Is.EqualTo("specialty/{specialtyId}"), "The Get method (with parameter) should have a HttpGet attribute with the correct template");
         }
 
-        [MonitoredTest("DoctorsController Tests - GetAppointmentsForPatient Should Have a HttpGet Attribute")]
-        public void _13_GetAppointmentsForPatient_ShouldHaveHttpGetAttribute()
+        [MonitoredTest("DoctorsController Tests - Post Action should have a HttpPostAttribute")]
+        public void _14_PostAction_ShouldHaveHttpPostAttribute()
         {
             // Arrange
-            var methodInfo = GetMethodInfo(nameof(AppointmentsController.GetAppointmentsForPatient), typeof(string));
-
-            // Act
-            var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
-                                             .FirstOrDefault() as HttpGetAttribute;
-
-            // Assert
-            Assert.That(httpGetAttribute, Is.Not.Null, "The GetAppointmentsForPatient method of the AppointmentsController should have a HttpGet attrubute");
-            Assert.That(httpGetAttribute.Template, Is.EqualTo("patient/{patientNationalNumber}"), "The GetAppointmentsForPatient method (with parameter) should have a HttpGet attribute with the correct template");
-        }
-
-        [MonitoredTest("DoctorsController Tests - GetUpcomingAppointments Should Have a HttpGet Attribute")]
-        public void _14_GetUpcomingAppointments_ShouldHaveHttpGetAttribute()
-        {
-            // Arrange
-            var methodInfo = GetMethodInfo(nameof(AppointmentsController.GetUpcomingAppointments), typeof(int));
-
-            // Act
-            var httpGetAttribute = methodInfo.GetCustomAttributes(typeof(HttpGetAttribute), true)
-                                             .FirstOrDefault() as HttpGetAttribute;
-
-            // Assert
-            Assert.That(httpGetAttribute, Is.Not.Null, "The GetUpcomingAppointments method of the AppointmentsController should have a HttpGet attrubute");
-            Assert.That(httpGetAttribute.Template, Is.EqualTo("upcoming"), "The GetUpcomingAppointments method (with parameter) should have a HttpGet attribute with the correct template");
-        }
-
-        [MonitoredTest("DoctorsController Tests - Post Action method Should Have a HttpPost Attribute")]
-        public void _15_PostAction_ShouldHaveHttpPostAttribute()
-        {
-            // Arrange
-            var methodInfo = GetMethodInfo(nameof(AppointmentsController.Post), typeof(Appointment));
+            var methodInfo = GetMethodInfo(nameof(DoctorsController.Post), typeof(Doctor));
 
             // Act
             var httpPostAttribute = methodInfo.GetCustomAttributes(typeof(HttpPostAttribute), true)
@@ -312,8 +298,8 @@ namespace HealthHub.Tests
             Assert.That(httpPostAttribute, Is.Not.Null, "The Post method of the DoctorsController should have a HttpPost attrubute");
         }
 
-        [MonitoredTest("DoctorsController Tests - Put Action method Should Have a HttpPut Attribute")]
-        public void _16_PutAction_ShouldHaveHttpPutAttribute()
+        [MonitoredTest("DoctorsController Tests - Put Action should have a HttpPutAttribute")]
+        public void _15_PutAction_ShouldHaveHttpPutAttribute()
         {
             // Arrange
             Type[] typesArray = { typeof(int), typeof(Doctor) };
@@ -321,27 +307,30 @@ namespace HealthHub.Tests
 
             // Act
             var httpPutAttribute = methodInfo.GetCustomAttributes(typeof(HttpPutAttribute), true)
-                .FirstOrDefault() as HttpPutAttribute;
+                                             .FirstOrDefault() as HttpPutAttribute;
 
             // Assert
-            Assert.That(httpPutAttribute, Is.Not.Null, "The Put method of the DoctorsController should have a HttpPut attribute");
-            Assert.That(httpPutAttribute!.Template, Is.EqualTo("{id}"), "The Put method should have a HttpPut attribute with the correct template");
+            Assert.That(httpPutAttribute, Is.Not.Null, "The Put method of the DoctorsController should have a HttpPost attrubute");
+            Assert.That(httpPutAttribute.Template, Is.EqualTo("{id}"), "The Put method should have a HttpPut attribute with the correct template");
+
         }
 
-        [MonitoredTest("DoctorsController Tests - Delete Action method Should Have a HttpDelete Attribute")]
-        public void _17_DeleteAction_ShouldHaveHttpDeleteAttribute()
+        [MonitoredTest("DoctorsController Tests - Delete Action should have a HttpDelete Attribute")]
+        public void _16_DeleteAction_ShouldHaveHttpDeleteAttribute()
         {
             // Arrange
             var methodInfo = GetMethodInfo(nameof(DoctorsController.Delete), typeof(int));
 
             // Act
             var httpDeleteAttribute = methodInfo.GetCustomAttributes(typeof(HttpDeleteAttribute), true)
-                .FirstOrDefault() as HttpDeleteAttribute;
+                                             .FirstOrDefault() as HttpDeleteAttribute;
 
             // Assert
-            Assert.That(httpDeleteAttribute, Is.Not.Null, "The Delete method of the DoctorsController should have a HttpDelete attribute");
-            Assert.That(httpDeleteAttribute!.Template, Is.EqualTo("{id}"), "The Delete method should have a HttpDelete attribute with the correct template");
+            Assert.That(httpDeleteAttribute, Is.Not.Null, "The Delete method of the DoctorsController should have a HttpPost attrubute");
+            Assert.That(httpDeleteAttribute.Template, Is.EqualTo("{id}"), "The Delete method should have a HttpDelete attribute with the correct template");
+
         }
+
 
         private static MethodInfo GetMethodInfo(string methodName, params Type[] parameterTypes)
         {
@@ -350,7 +339,7 @@ namespace HealthHub.Tests
 
             Assert.That(methodInfo, Is.Not.Null, $"Method with name '{methodName}' and specified parameters not found in {controllerType.Name}.");
 
-            return methodInfo!;
+            return methodInfo;
         }
 
         private static MethodInfo GetMethodWithoutParametersInfo(string methodName, params Type[] parameterTypes)
@@ -360,7 +349,8 @@ namespace HealthHub.Tests
 
             Assert.That(methodInfo, Is.Not.Null, $"Method with name '{methodName}' and specified parameters not found in {controllerType.Name}.");
 
-            return methodInfo!;
+            return methodInfo;
         }
+
     }
 }
